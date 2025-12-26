@@ -5,20 +5,31 @@ using Trabalho_ISI.Data;
 
 namespace Trabalho_ISI.Controllers
 {
+    /// <summary>
+    /// Controller responsible for managing movie-related operations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class MoviesController : ControllerBase
     {
+        // Database context for accessing movie data
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Constructor with dependency injection of the database context.
+        /// </summary>
+        /// <param name="context">Application database context</param>
         public MoviesController(AppDbContext context)
         {
             _context = context;
         }
 
         /// <summary>
-        /// Obter todos os filmes (com paginação)
+        /// Retrieves all movies with pagination and optional search (PUBLIC).
         /// </summary>
+        /// <param name="page">Page number</param>
+        /// <param name="pageSize">Number of items per page</param>
+        /// <param name="search">Optional search string (title or original title)</param>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies(
             [FromQuery] int page = 1,
@@ -27,7 +38,6 @@ namespace Trabalho_ISI.Controllers
         {
             var query = _context.Movies.AsQueryable();
 
-            // Filtrar por título se fornecido
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(m =>
@@ -36,6 +46,7 @@ namespace Trabalho_ISI.Controllers
             }
 
             var total = await query.CountAsync();
+
             var movies = await query
                 .OrderByDescending(m => m.Id)
                 .Skip((page - 1) * pageSize)
@@ -53,24 +64,24 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Obter um filme específico por ID
+        /// Retrieves a specific movie by its ID (PUBLIC).
         /// </summary>
+        /// <param name="id">Movie identifier</param>
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
 
             if (movie == null)
-            {
-                return NotFound(new { message = "Filme não encontrado" });
-            }
+                return NotFound(new { message = "Movie not found" });
 
             return Ok(movie);
         }
 
         /// <summary>
-        /// Criar um novo filme
+        /// Creates a new movie (ADMIN ONLY).
         /// </summary>
+        /// <param name="movieDto">Movie creation data</param>
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Movie>> CreateMovie(MovieCreateDto movieDto)
@@ -92,8 +103,10 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Atualizar um filme existente
+        /// Updates an existing movie completely (ADMIN ONLY).
         /// </summary>
+        /// <param name="id">Movie identifier</param>
+        /// <param name="movieDto">Updated movie data</param>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateMovie(int id, MovieUpdateDto movieDto)
@@ -101,11 +114,8 @@ namespace Trabalho_ISI.Controllers
             var movie = await _context.Movies.FindAsync(id);
 
             if (movie == null)
-            {
-                return NotFound(new { message = "Filme não encontrado" });
-            }
+                return NotFound(new { message = "Movie not found" });
 
-            // Atualizar campos
             movie.Title = movieDto.Title ?? movie.Title;
             movie.OriginalTitle = movieDto.OriginalTitle ?? movie.OriginalTitle;
             movie.Overview = movieDto.Overview ?? movie.Overview;
@@ -120,8 +130,9 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Eliminar um filme
+        /// Deletes a movie by its ID (ADMIN ONLY).
         /// </summary>
+        /// <param name="id">Movie identifier</param>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteMovie(int id)
@@ -129,19 +140,18 @@ namespace Trabalho_ISI.Controllers
             var movie = await _context.Movies.FindAsync(id);
 
             if (movie == null)
-            {
-                return NotFound(new { message = "Filme não encontrado" });
-            }
+                return NotFound(new { message = "Movie not found" });
 
             _context.Movies.Remove(movie);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Filme eliminado com sucesso" });
+            return Ok(new { message = "Movie deleted successfully" });
         }
 
         /// <summary>
-        /// Pesquisar filmes por ano
+        /// Retrieves movies released in a specific year (PUBLIC).
         /// </summary>
+        /// <param name="year">Release year</param>
         [HttpGet("by-year/{year}")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesByYear(string year)
         {
@@ -153,8 +163,9 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Obter filmes mais recentes
+        /// Retrieves the most recently released movies (PUBLIC).
         /// </summary>
+        /// <param name="count">Number of movies to return</param>
         [HttpGet("recent")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetRecentMovies([FromQuery] int count = 10)
         {
@@ -167,8 +178,10 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Atualizar parcialmente um filme (PATCH)
+        /// Partially updates a movie using PATCH (ADMIN ONLY).
         /// </summary>
+        /// <param name="id">Movie identifier</param>
+        /// <param name="dto">Partial movie update data</param>
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PatchMovie(int id, MovieUpdateDto dto)
@@ -176,8 +189,9 @@ namespace Trabalho_ISI.Controllers
             var movie = await _context.Movies.FindAsync(id);
 
             if (movie == null)
-                return NotFound(new { message = "Filme não encontrado" });
+                return NotFound(new { message = "Movie not found" });
 
+            // Apply only provided fields
             if (dto.Title != null)
                 movie.Title = dto.Title;
 
@@ -194,10 +208,11 @@ namespace Trabalho_ISI.Controllers
 
             return Ok(movie);
         }
-
     }
 
-    // DTOs para Create e Update
+    /// <summary>
+    /// DTO used when creating a new movie.
+    /// </summary>
     public class MovieCreateDto
     {
         public string Title { get; set; }
@@ -208,6 +223,9 @@ namespace Trabalho_ISI.Controllers
         public string? BackdropPath { get; set; }
     }
 
+    /// <summary>
+    /// DTO used when updating an existing movie.
+    /// </summary>
     public class MovieUpdateDto
     {
         public string? Title { get; set; }

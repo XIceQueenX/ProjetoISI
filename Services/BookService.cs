@@ -4,6 +4,9 @@ using Trabalho_ISI.Services.Interfaces;
 
 namespace Trabalho_ISI.Services
 {
+    /// <summary>
+    /// Service responsible for CRUD operations and queries related to books.
+    /// </summary>
     public class BookService : IBookService
     {
         private readonly AppDbContext _context;
@@ -13,11 +16,13 @@ namespace Trabalho_ISI.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves all books with optional search and pagination.
+        /// </summary>
         public async Task<PaginatedResult<Book>> GetAllBooksAsync(int page, int pageSize, string? search)
         {
             var query = _context.Books.AsQueryable();
 
-            // Aplicar filtro de pesquisa se fornecido
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(b =>
@@ -42,11 +47,18 @@ namespace Trabalho_ISI.Services
             };
         }
 
+        /// <summary>
+        /// Retrieves a book by its ID.
+        /// Returns null if not found.
+        /// </summary>
         public async Task<Book?> GetBookByIdAsync(string id)
         {
             return await _context.Books.FindAsync(id);
         }
 
+        /// <summary>
+        /// Creates a new book record.
+        /// </summary>
         public async Task<Book> CreateBookAsync(BookCreateDto dto)
         {
             var book = new Book
@@ -66,14 +78,16 @@ namespace Trabalho_ISI.Services
             return book;
         }
 
+        /// <summary>
+        /// Updates an existing book by ID.
+        /// Returns null if book not found.
+        /// </summary>
         public async Task<Book?> UpdateBookAsync(string id, BookUpdateDto dto)
         {
             var book = await _context.Books.FindAsync(id);
+            if (book == null) return null;
 
-            if (book == null)
-                return null;
-
-            // Atualizar apenas os campos fornecidos
+            // Update only provided fields
             book.Title = dto.Title ?? book.Title;
             book.Subtitle = dto.Subtitle ?? book.Subtitle;
             book.Authors = dto.Authors ?? book.Authors;
@@ -87,12 +101,14 @@ namespace Trabalho_ISI.Services
             return book;
         }
 
+        /// <summary>
+        /// Deletes a book by ID.
+        /// Returns true if deleted successfully.
+        /// </summary>
         public async Task<bool> DeleteBookAsync(string id)
         {
             var book = await _context.Books.FindAsync(id);
-
-            if (book == null)
-                return false;
+            if (book == null) return false;
 
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
@@ -100,6 +116,9 @@ namespace Trabalho_ISI.Services
             return true;
         }
 
+        /// <summary>
+        /// Retrieves books by author name.
+        /// </summary>
         public async Task<List<Book>> GetBooksByAuthorAsync(string author)
         {
             return await _context.Books
@@ -107,13 +126,18 @@ namespace Trabalho_ISI.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Returns the total number of books.
+        /// </summary>
         public async Task<int> GetTotalBooksCountAsync()
         {
             return await _context.Books.CountAsync();
         }
     }
 
-    // DTOs
+    /// <summary>
+    /// DTO for creating a book.
+    /// </summary>
     public class BookCreateDto
     {
         public string Title { get; set; }
@@ -124,6 +148,10 @@ namespace Trabalho_ISI.Services
         public string? Description { get; set; }
     }
 
+    /// <summary>
+    /// DTO for updating a book.
+    /// All fields are optional.
+    /// </summary>
     public class BookUpdateDto
     {
         public string? Title { get; set; }

@@ -61,20 +61,5 @@ namespace Trabalho_ISI.Controllers
             var result = await _recommendationService.GetPersonalizedRecommendationsAsync(preferences);
             return Ok(result);
         }
-
-        /// <summary>
-        /// Encontrar correspondências entre livros e filmes
-        /// </summary>
-        [HttpGet("matches")]
-        [AllowAnonymous]
-        public async Task<ActionResult> FindBookMovieMatches()
-        {
-            var matches = await _recommendationService.FindBookMovieMatchesAsync();
-            return Ok(new
-            {
-                totalMatches = matches.Count,
-                matches = matches.Take(20)
-            });
-        }
     }
 }

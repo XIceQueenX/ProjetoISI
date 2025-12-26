@@ -8,6 +8,10 @@ using Trabalho_ISI.Services.Interfaces;
 
 namespace Trabalho_ISI.Services
 {
+    /// <summary>
+    /// Service responsible for user authentication and registration.
+    /// Generates JWT tokens for successful login or registration.
+    /// </summary>
     public class AuthService : IAuthService
     {
         private readonly AppDbContext _context;
@@ -19,8 +23,14 @@ namespace Trabalho_ISI.Services
             _config = config;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// Throws an exception if the email already exists.
+        /// Returns an authentication response including JWT token.
+        /// </summary>
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
         {
+            // Check if the email is already registered
             if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
                 throw new Exception("Email already exists");
 
@@ -29,7 +39,7 @@ namespace Trabalho_ISI.Services
                 Username = dto.Username,
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = string.IsNullOrEmpty(dto.Role) ? "User" : dto.Role  // Default to "User" if no role provided
+                Role = string.IsNullOrEmpty(dto.Role) ? "User" : dto.Role
             };
 
             _context.Users.Add(user);
@@ -38,30 +48,34 @@ namespace Trabalho_ISI.Services
             return GenerateToken(user);
         }
 
+        /// <summary>
+        /// Logs in an existing user.
+        /// Returns null if credentials are invalid.
+        /// </summary>
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            if (user == null ||
-                !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 return null;
 
             return GenerateToken(user);
         }
 
+        /// <summary>
+        /// Generates a JWT token for a given user.
+        /// </summary>
         private AuthResponseDto GenerateToken(User user)
         {
             var claims = new[]
             {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim(ClaimTypes.Role, user.Role) // Add the user's role here
-    };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var expires = DateTime.UtcNow.AddMinutes(
@@ -82,6 +96,5 @@ namespace Trabalho_ISI.Services
                 Expiration = expires
             };
         }
-
     }
 }

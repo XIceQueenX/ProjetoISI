@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Trabalho_ISI.Data;
 using Trabalho_ISI.Services.Interfaces;
-using Trabalho_ISI.Services.Interfaces.Trabalho_ISI.Services.Interfaces;
 
 namespace Trabalho_ISI.Services
 {
+    /// <summary>
+    /// Service responsible for CRUD operations and queries related to movies.
+    /// </summary>
     public class MovieService : IMovieService
     {
         private readonly AppDbContext _context;
@@ -14,11 +16,13 @@ namespace Trabalho_ISI.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves all movies with optional search and pagination.
+        /// </summary>
         public async Task<PaginatedResult<Movie>> GetAllMoviesAsync(int page, int pageSize, string? search)
         {
             var query = _context.Movies.AsQueryable();
 
-            // Aplicar filtro de pesquisa
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(m =>
@@ -44,11 +48,18 @@ namespace Trabalho_ISI.Services
             };
         }
 
+        /// <summary>
+        /// Retrieves a movie by its ID.
+        /// Returns null if not found.
+        /// </summary>
         public async Task<Movie?> GetMovieByIdAsync(int id)
         {
             return await _context.Movies.FindAsync(id);
         }
 
+        /// <summary>
+        /// Creates a new movie record.
+        /// </summary>
         public async Task<Movie> CreateMovieAsync(MovieCreateDto dto)
         {
             var movie = new Movie
@@ -57,8 +68,8 @@ namespace Trabalho_ISI.Services
                 OriginalTitle = dto.OriginalTitle ?? dto.Title,
                 Overview = dto.Overview,
                 ReleaseDate = dto.ReleaseDate,
-                PosterPath = dto.PosterPath,
-                BackdropPath = dto.BackdropPath
+                PosterPath = PrependImageUrl(dto.PosterPath),
+                BackdropPath = PrependImageUrl(dto.BackdropPath)
             };
 
             _context.Movies.Add(movie);
@@ -67,19 +78,21 @@ namespace Trabalho_ISI.Services
             return movie;
         }
 
+        /// <summary>
+        /// Updates an existing movie by ID.
+        /// Returns null if movie not found.
+        /// </summary>
         public async Task<Movie?> UpdateMovieAsync(int id, MovieUpdateDto dto)
         {
             var movie = await _context.Movies.FindAsync(id);
-
-            if (movie == null)
-                return null;
+            if (movie == null) return null;
 
             movie.Title = dto.Title ?? movie.Title;
             movie.OriginalTitle = dto.OriginalTitle ?? movie.OriginalTitle;
             movie.Overview = dto.Overview ?? movie.Overview;
             movie.ReleaseDate = dto.ReleaseDate ?? movie.ReleaseDate;
-            movie.PosterPath = dto.PosterPath ?? movie.PosterPath;
-            movie.BackdropPath = dto.BackdropPath ?? movie.BackdropPath;
+            if (dto.PosterPath != null) movie.PosterPath = PrependImageUrl(dto.PosterPath);
+            if (dto.BackdropPath != null) movie.BackdropPath = PrependImageUrl(dto.BackdropPath);
 
             _context.Entry(movie).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -87,12 +100,14 @@ namespace Trabalho_ISI.Services
             return movie;
         }
 
+        /// <summary>
+        /// Deletes a movie by ID.
+        /// Returns true if deleted successfully.
+        /// </summary>
         public async Task<bool> DeleteMovieAsync(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
-
-            if (movie == null)
-                return false;
+            if (movie == null) return false;
 
             _context.Movies.Remove(movie);
             await _context.SaveChangesAsync();
@@ -100,6 +115,9 @@ namespace Trabalho_ISI.Services
             return true;
         }
 
+        /// <summary>
+        /// Retrieves the most recent movies.
+        /// </summary>
         public async Task<List<Movie>> GetRecentMoviesAsync(int count)
         {
             return await _context.Movies
@@ -108,6 +126,9 @@ namespace Trabalho_ISI.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Retrieves movies filtered by release year.
+        /// </summary>
         public async Task<List<Movie>> GetMoviesByYearAsync(string year)
         {
             return await _context.Movies
@@ -115,13 +136,30 @@ namespace Trabalho_ISI.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Returns the total number of movies.
+        /// </summary>
         public async Task<int> GetTotalMoviesCountAsync()
         {
             return await _context.Movies.CountAsync();
         }
+
+        /// <summary>
+        /// Prepends the TMDB image base URL if the path is relative.
+        /// </summary>
+        string? PrependImageUrl(string? path)
+        {
+            if (string.IsNullOrEmpty(path)) return null;
+
+            if (path.StartsWith("http")) return path; // already a full URL
+
+            return $"https://image.tmdb.org/t/p/w500{path}";
+        }
     }
 
-    // DTOs
+    /// <summary>
+    /// DTO for creating a movie.
+    /// </summary>
     public class MovieCreateDto
     {
         public string Title { get; set; }
@@ -132,6 +170,10 @@ namespace Trabalho_ISI.Services
         public string? BackdropPath { get; set; }
     }
 
+    /// <summary>
+    /// DTO for updating a movie.
+    /// All fields are optional.
+    /// </summary>
     public class MovieUpdateDto
     {
         public string? Title { get; set; }

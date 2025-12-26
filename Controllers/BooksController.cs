@@ -5,19 +5,28 @@ using Trabalho_ISI.Services.Interfaces;
 
 namespace Trabalho_ISI.Controllers
 {
+    /// <summary>
+    /// Controller responsible for managing book-related operations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
     {
+        // Service that contains the business logic for books
         private readonly IBookService _bookService;
 
+        /// <summary>
+        /// Constructor with dependency injection of the book service.
+        /// </summary>
+        /// <param name="bookService">Book service</param>
         public BooksController(IBookService bookService)
         {
             _bookService = bookService;
         }
 
         /// <summary>
-        /// Obter todos os livros (PÚBLICO)
+        /// Retrieves a paginated list of all books (PUBLIC).
+        /// Supports optional search by title or description.
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
@@ -31,8 +40,9 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Obter um livro específico (PÚBLICO)
+        /// Retrieves a specific book by its ID (PUBLIC).
         /// </summary>
+        /// <param name="id">Book identifier</param>
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult> GetBook(string id)
@@ -40,25 +50,30 @@ namespace Trabalho_ISI.Controllers
             var book = await _bookService.GetBookByIdAsync(id);
 
             if (book == null)
-                return NotFound(new { message = "Livro não encontrado" });
+                return NotFound(new { message = "Book not found" });
 
             return Ok(book);
         }
 
         /// <summary>
-        /// Criar novo livro (APENAS ADMIN) 🔒
+        /// Creates a new book (ADMIN ONLY).
         /// </summary>
+        /// <param name="dto">Book creation data</param>
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateBook(BookCreateDto dto)
         {
             var book = await _bookService.CreateBookAsync(dto);
+
+            // Returns HTTP 201 with the location of the created resource
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
 
         /// <summary>
-        /// Atualizar livro (APENAS ADMIN) 🔒
+        /// Updates an existing book (ADMIN ONLY).
         /// </summary>
+        /// <param name="id">Book identifier</param>
+        /// <param name="dto">Updated book data</param>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateBook(string id, BookUpdateDto dto)
@@ -66,14 +81,15 @@ namespace Trabalho_ISI.Controllers
             var book = await _bookService.UpdateBookAsync(id, dto);
 
             if (book == null)
-                return NotFound(new { message = "Livro não encontrado" });
+                return NotFound(new { message = "Book not found" });
 
             return Ok(book);
         }
 
         /// <summary>
-        /// Eliminar livro (APENAS ADMIN) 🔒
+        /// Deletes a book by its ID (ADMIN ONLY).
         /// </summary>
+        /// <param name="id">Book identifier</param>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteBook(string id)
@@ -81,14 +97,15 @@ namespace Trabalho_ISI.Controllers
             var success = await _bookService.DeleteBookAsync(id);
 
             if (!success)
-                return NotFound(new { message = "Livro não encontrado" });
+                return NotFound(new { message = "Book not found" });
 
-            return Ok(new { message = "Livro eliminado com sucesso" });
+            return Ok(new { message = "Book deleted successfully" });
         }
 
         /// <summary>
-        /// Pesquisar livros por autor (PÚBLICO)
+        /// Retrieves books written by a specific author (PUBLIC).
         /// </summary>
+        /// <param name="author">Author name</param>
         [HttpGet("by-author/{author}")]
         [AllowAnonymous]
         public async Task<ActionResult> GetBooksByAuthor(string author)
@@ -98,7 +115,7 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Estatísticas de livros (PÚBLICO)
+        /// Retrieves basic book statistics (PUBLIC).
         /// </summary>
         [HttpGet("stats")]
         [AllowAnonymous]
