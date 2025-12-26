@@ -1,0 +1,41 @@
+# Visual Studio / ASP.NET Core / .NET
+
+# Visual Studio temporary files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+out/
+
+# Optional: IDE-specific files
+.idea/
+
+# Node modules (if you use Node.js)
+node_modules/
+
+# Logs
+*.log
+
+# Published folders
+publish/
+
+# App settings secrets
+appsettings*.json
+
+# Test coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# ReSharper files
+_ReSharper*/
+*.DotSettings.user
+
+# OS generated files
+.DS_Store
+Thumbs.db

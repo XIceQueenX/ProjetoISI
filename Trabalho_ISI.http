@@ -1,0 +1,6 @@
+@Trabalho_ISI_HostAddress = http://localhost:5279
+
+GET {{Trabalho_ISI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
