@@ -8,7 +8,7 @@
         /// <summary>
         /// Unique identifier for the book (e.g., external API ID or ISBN).
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Main title of the book.

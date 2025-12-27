@@ -119,7 +119,7 @@ namespace Trabalho_ISI.Services
                 foreach (var b in items.EnumerateArray())
                 {
                     var volumeInfo = b.GetProperty("volumeInfo");
-                    var bookId = b.GetProperty("id").GetString();
+                    var bookId = b.GetProperty("id").GetInt32();
 
                     if (await _context.Books.AnyAsync(x => x.Id == bookId))
                         continue;
@@ -130,7 +130,6 @@ namespace Trabalho_ISI.Services
 
                     var book = new Book
                     {
-                        Id = bookId,
                         Title = volumeInfo.GetProperty("title").GetString(),
                         Subtitle = volumeInfo.TryGetProperty("subtitle", out var s) ? s.GetString() : "",
                         Authors = authors,

@@ -149,35 +149,6 @@ namespace Trabalho_ISI.Controllers
         }
 
         /// <summary>
-        /// Retrieves movies released in a specific year (PUBLIC).
-        /// </summary>
-        /// <param name="year">Release year</param>
-        [HttpGet("by-year/{year}")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMoviesByYear(string year)
-        {
-            var movies = await _context.Movies
-                .Where(m => m.ReleaseDate.StartsWith(year))
-                .ToListAsync();
-
-            return Ok(movies);
-        }
-
-        /// <summary>
-        /// Retrieves the most recently released movies (PUBLIC).
-        /// </summary>
-        /// <param name="count">Number of movies to return</param>
-        [HttpGet("recent")]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetRecentMovies([FromQuery] int count = 10)
-        {
-            var movies = await _context.Movies
-                .OrderByDescending(m => m.ReleaseDate)
-                .Take(count)
-                .ToListAsync();
-
-            return Ok(movies);
-        }
-
-        /// <summary>
         /// Partially updates a movie using PATCH (ADMIN ONLY).
         /// </summary>
         /// <param name="id">Movie identifier</param>

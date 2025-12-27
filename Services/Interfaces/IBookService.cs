@@ -15,7 +15,7 @@ namespace Trabalho_ISI.Services.Interfaces
         /// <summary>
         /// Retrieves a single book by its ID.
         /// </summary>
-        Task<Book?> GetBookByIdAsync(string id);
+        Task<Book?> GetBookByIdAsync(int id);
 
         /// <summary>
         /// Creates a new book.
@@ -26,23 +26,18 @@ namespace Trabalho_ISI.Services.Interfaces
         /// Updates an existing book by ID.
         /// Returns null if the book does not exist.
         /// </summary>
-        Task<Book?> UpdateBookAsync(string id, BookUpdateDto dto);
+        Task<Book?> UpdateBookAsync(int id, BookUpdateDto dto);
 
         /// <summary>
         /// Deletes a book by ID.
         /// Returns true if deleted successfully, false otherwise.
         /// </summary>
-        Task<bool> DeleteBookAsync(string id);
+        Task<bool> DeleteBookAsync(int id);
 
         /// <summary>
         /// Retrieves all books by a specific author.
         /// </summary>
         Task<List<Book>> GetBooksByAuthorAsync(string author);
-
-        /// <summary>
-        /// Returns the total number of books.
-        /// </summary>
-        Task<int> GetTotalBooksCountAsync();
     }
 
     /// <summary>

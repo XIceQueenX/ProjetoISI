@@ -45,7 +45,7 @@ namespace Trabalho_ISI.Controllers
         /// <param name="id">Book identifier</param>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetBook(string id)
+        public async Task<ActionResult> GetBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
 
@@ -76,7 +76,7 @@ namespace Trabalho_ISI.Controllers
         /// <param name="dto">Updated book data</param>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateBook(string id, BookUpdateDto dto)
+        public async Task<ActionResult> UpdateBook(int id, BookUpdateDto dto)
         {
             var book = await _bookService.UpdateBookAsync(id, dto);
 
@@ -92,7 +92,7 @@ namespace Trabalho_ISI.Controllers
         /// <param name="id">Book identifier</param>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> DeleteBook(string id)
+        public async Task<ActionResult> DeleteBook(int id)
         {
             var success = await _bookService.DeleteBookAsync(id);
 
@@ -112,17 +112,6 @@ namespace Trabalho_ISI.Controllers
         {
             var books = await _bookService.GetBooksByAuthorAsync(author);
             return Ok(books);
-        }
-
-        /// <summary>
-        /// Retrieves basic book statistics (PUBLIC).
-        /// </summary>
-        [HttpGet("stats")]
-        [AllowAnonymous]
-        public async Task<ActionResult> GetStats()
-        {
-            var total = await _bookService.GetTotalBooksCountAsync();
-            return Ok(new { totalBooks = total });
         }
     }
 }

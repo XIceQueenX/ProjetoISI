@@ -51,7 +51,7 @@ namespace Trabalho_ISI.Services
         /// Retrieves a book by its ID.
         /// Returns null if not found.
         /// </summary>
-        public async Task<Book?> GetBookByIdAsync(string id)
+        public async Task<Book?> GetBookByIdAsync(int id)
         {
             return await _context.Books.FindAsync(id);
         }
@@ -63,7 +63,6 @@ namespace Trabalho_ISI.Services
         {
             var book = new Book
             {
-                Id = Guid.NewGuid().ToString(),
                 Title = dto.Title,
                 Subtitle = dto.Subtitle,
                 Authors = dto.Authors,
@@ -82,7 +81,7 @@ namespace Trabalho_ISI.Services
         /// Updates an existing book by ID.
         /// Returns null if book not found.
         /// </summary>
-        public async Task<Book?> UpdateBookAsync(string id, BookUpdateDto dto)
+        public async Task<Book?> UpdateBookAsync(int id, BookUpdateDto dto)
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null) return null;
@@ -105,7 +104,7 @@ namespace Trabalho_ISI.Services
         /// Deletes a book by ID.
         /// Returns true if deleted successfully.
         /// </summary>
-        public async Task<bool> DeleteBookAsync(string id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null) return false;

@@ -34,20 +34,5 @@ namespace Trabalho_ISI.Services.Interfaces
         /// Returns true if deleted successfully, false otherwise.
         /// </summary>
         Task<bool> DeleteMovieAsync(int id);
-
-        /// <summary>
-        /// Retrieves a list of the most recent movies.
-        /// </summary>
-        Task<List<Movie>> GetRecentMoviesAsync(int count);
-
-        /// <summary>
-        /// Retrieves movies released in a specific year.
-        /// </summary>
-        Task<List<Movie>> GetMoviesByYearAsync(string year);
-
-        /// <summary>
-        /// Returns the total number of movies.
-        /// </summary>
-        Task<int> GetTotalMoviesCountAsync();
     }
 }

@@ -116,35 +116,6 @@ namespace Trabalho_ISI.Services
         }
 
         /// <summary>
-        /// Retrieves the most recent movies.
-        /// </summary>
-        public async Task<List<Movie>> GetRecentMoviesAsync(int count)
-        {
-            return await _context.Movies
-                .OrderByDescending(m => m.ReleaseDate)
-                .Take(count)
-                .ToListAsync();
-        }
-
-        /// <summary>
-        /// Retrieves movies filtered by release year.
-        /// </summary>
-        public async Task<List<Movie>> GetMoviesByYearAsync(string year)
-        {
-            return await _context.Movies
-                .Where(m => m.ReleaseDate.StartsWith(year))
-                .ToListAsync();
-        }
-
-        /// <summary>
-        /// Returns the total number of movies.
-        /// </summary>
-        public async Task<int> GetTotalMoviesCountAsync()
-        {
-            return await _context.Movies.CountAsync();
-        }
-
-        /// <summary>
         /// Prepends the TMDB image base URL if the path is relative.
         /// </summary>
         string? PrependImageUrl(string? path)

@@ -20,13 +20,6 @@ namespace Trabalho_ISI.Services.Interfaces
         /// <param name="movieId">The ID of the movie.</param>
         /// <returns>Recommendation result containing matching books.</returns>
         Task<RecommendationResult> GetBookRecommendationsForMovieAsync(int movieId);
-
-        /// <summary>
-        /// Gets personalized recommendations of books and movies based on user preferences.
-        /// </summary>
-        /// <param name="preferences">User preferences, such as genre or keywords.</param>
-        /// <returns>Personalized recommendations containing movies and books.</returns>
-        Task<PersonalizedRecommendations> GetPersonalizedRecommendationsAsync(PreferencesDto preferences);
     }
 
     /// <summary>
@@ -66,21 +59,5 @@ namespace Trabalho_ISI.Services.Interfaces
     {
         public object Book { get; set; }
         public List<object> Movies { get; set; }
-    }
-
-    /// <summary>
-    /// User preferences used for generating personalized recommendations.
-    /// </summary>
-    public class PreferencesDto
-    {
-        /// <summary>
-        /// Optional genre preference.
-        /// </summary>
-        public string? Genre { get; set; }
-
-        /// <summary>
-        /// Optional list of keywords for recommendation.
-        /// </summary>
-        public List<string>? Keywords { get; set; }
     }
 }

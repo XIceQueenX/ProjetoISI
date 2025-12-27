@@ -50,16 +50,5 @@ namespace Trabalho_ISI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
-
-        /// <summary>
-        /// Recomendações personalizadas
-        /// </summary>
-        [HttpPost("personalized")]
-        [AllowAnonymous]
-        public async Task<ActionResult> GetPersonalizedRecommendations(PreferencesDto preferences)
-        {
-            var result = await _recommendationService.GetPersonalizedRecommendationsAsync(preferences);
-            return Ok(result);
-        }
     }
 }

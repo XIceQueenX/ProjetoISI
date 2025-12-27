@@ -33,17 +33,18 @@ namespace Trabalho_ISI.Services
                 throw new Exception("Livro não encontrado");
 
             var movies = await _context.Movies
-                .Where(m => m.Title.Equals(book.Title, StringComparison.OrdinalIgnoreCase))
-                .Select(m => new
-                {
-                    m.Id,
-                    m.Title,
-                    m.Overview,
-                    m.ReleaseDate,
-                    m.PosterPath,
-                    MatchReason = "Mesma ideia do livro: " + book.Title
-                })
-                .ToListAsync();
+    .Where(m => m.Title.ToLower() == book.Title.ToLower())
+    .Select(m => new
+    {
+        m.Id,
+        m.Title,
+        m.Overview,
+        m.ReleaseDate,
+        m.PosterPath,
+        MatchReason = "Mesma ideia do livro: " + book.Title
+    })
+    .ToListAsync();
+
 
             return new RecommendationResult
             {
@@ -66,53 +67,24 @@ namespace Trabalho_ISI.Services
                 throw new Exception("Filme não encontrado");
 
             var books = await _context.Books
-                .Where(b => b.Title.Equals(movie.Title, StringComparison.OrdinalIgnoreCase))
-                .Select(b => new
-                {
-                    b.Id,
-                    b.Title,
-                    b.Authors,
-                    b.Description,
-                    b.PublishedDate,
-                    MatchReason = "Mesma ideia do filme: " + movie.Title
-                })
-                .ToListAsync();
+    .Where(b => b.Title.ToLower() == movie.Title.ToLower())
+    .Select(b => new
+    {
+        b.Id,
+        b.Title,
+        b.Authors,
+        b.Description,
+        b.PublishedDate,
+        MatchReason = "Mesma ideia do filme: " + movie.Title
+    })
+    .ToListAsync();
+
 
             return new RecommendationResult
             {
                 Source = new { movie.Id, movie.Title, movie.ReleaseDate },
                 Recommendations = books.Cast<object>().ToList(),
                 TotalRecommendations = books.Count
-            };
-        }
-
-        /// <summary>
-        /// Generates personalized recommendations based on user preferences (e.g., genre).
-        /// </summary>
-        /// <param name="preferences">User preference data</param>
-        /// <returns>Personalized movie and book recommendations</returns>
-        public async Task<PersonalizedRecommendations> GetPersonalizedRecommendationsAsync(PreferencesDto preferences)
-        {
-            var movieRecommendations = new List<Movie>();
-            var bookRecommendations = new List<Book>();
-
-            if (!string.IsNullOrEmpty(preferences.Genre))
-            {
-                movieRecommendations.AddRange(await _context.Movies
-                    .Where(m => m.Overview.Contains(preferences.Genre))
-                    .Take(5)
-                    .ToListAsync());
-
-                bookRecommendations.AddRange(await _context.Books
-                    .Where(b => b.Description.Contains(preferences.Genre))
-                    .Take(5)
-                    .ToListAsync());
-            }
-
-            return new PersonalizedRecommendations
-            {
-                Movies = movieRecommendations.Distinct().Take(10).ToList(),
-                Books = bookRecommendations.Distinct().Take(10).ToList()
             };
         }
     }
