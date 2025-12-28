@@ -216,26 +216,6 @@ Returns basic statistics about books.
 
 ---
 
-### Movies by Year (PUBLIC)
-
-**GET** `/api/Movies/by-year/{year}`
-
-**Path Parameter:**
-
-* `year` – Release year
-
----
-
-### Recent Movies (PUBLIC)
-
-**GET** `/api/Movies/recent`
-
-**Query Parameter:**
-
-* `count` (integer, default: 10) – Number of movies to return
-
----
-
 ## Recommendation Endpoints
 
 ### Movies Recommended for a Book
