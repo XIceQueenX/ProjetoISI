@@ -25,7 +25,7 @@ namespace Trabalho_ISI.Services
         /// </summary>
         /// <param name="bookId">ID of the book</param>
         /// <returns>A list of movie recommendations</returns>
-        public async Task<RecommendationResult> GetMovieRecommendationsForBookAsync(string bookId)
+        public async Task<RecommendationResult> GetMovieRecommendationsForBookAsync(int bookId)
         {
             var book = await _context.Books.FindAsync(bookId);
 

@@ -12,7 +12,7 @@ namespace Trabalho_ISI.Services.Interfaces
         /// </summary>
         /// <param name="bookId">The ID of the book.</param>
         /// <returns>Recommendation result containing matching movies.</returns>
-        Task<RecommendationResult> GetMovieRecommendationsForBookAsync(string bookId);
+        Task<RecommendationResult> GetMovieRecommendationsForBookAsync(int bookId);
 
         /// <summary>
         /// Gets a list of book recommendations based on a movie's title.

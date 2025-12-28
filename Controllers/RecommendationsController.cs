@@ -20,7 +20,7 @@ namespace Trabalho_ISI.Controllers
         /// </summary>
         [HttpGet("movies-for-book/{bookId}")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetMovieRecommendationsForBook(string bookId)
+        public async Task<ActionResult> GetMovieRecommendationsForBook(int bookId)
         {
             try
             {
